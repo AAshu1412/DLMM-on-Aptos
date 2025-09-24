@@ -271,7 +271,7 @@ module dlmm {
 
     // Add liquidity to existing pool
     public entry fun add_liquidity(
-            liquidator: &signer,
+        liquidator: &signer,
         token1_address: address,
         token2_address: address,
         bin_step: u16,
@@ -282,7 +282,7 @@ module dlmm {
         let liquidator_addr = signer::address_of(liquidator);
         
         // Get pool
-        let factory = borrow_global<Factory>(@dlmm_addr);
+        let factory = borrow_global<Factory>(@ashu_address);
         let pool_key = PoolKey { token1_address, token2_address, bin_step };
         assert!(simple_map::contains_key(&factory.pools, &pool_key), error::not_found(E_POOL_NOT_EXISTS));
         
@@ -362,6 +362,8 @@ module dlmm {
             bin_id: target_bin_id
         });
     }
+
+    
 
     // View functions
     #[view]
