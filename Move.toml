@@ -1,0 +1,20 @@
+[package]
+name = "tokenspring"
+version = "1.0.0"
+authors = []
+
+[addresses]
+ashu_address = "8c6f67268473a4c8aaa782f5c83e396fdd05f78fb4de0abf173be995e32405ff"
+
+[dev-addresses]
+
+# [dependencies.AptosFramework]
+# git = "https://github.com/aptos-labs/aptos-framework.git"
+# rev = "mainnet"
+# subdir = "aptos-framework"
+
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-framework.git", subdir = "aptos-framework", rev = "mainnet" }
+
+[dev-dependencies]
