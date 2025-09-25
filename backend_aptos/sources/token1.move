@@ -176,6 +176,7 @@ module dlmm {
     use aptos_framework::timestamp;
     use std::bcs;
     use aptos_framework::aptos_account;
+    use std::debug::print;
 
     // Error codes
     const E_POOL_ALREADY_EXISTS: u64 = 1;
@@ -215,7 +216,7 @@ module dlmm {
         total_liquidity: u64,
         fees_collected: u64,
         creator: address,
-        created_at: u64
+        // created_at: u64
     }
 
     // Liquidator position tracking
@@ -260,7 +261,7 @@ module dlmm {
         bin_id: u64
     }
 
-    struct UserTokens has drop, store, key {
+    struct UserTokens has drop, store, key, copy {
         token1_address: address,
         token2_address: address,
         token3_address: address,
@@ -456,7 +457,7 @@ fun add_single_token(
             total_liquidity: initial_token1_amount + initial_token2_amount,
             fees_collected: 0,
             creator: creator_addr,
-            created_at: timestamp::now_seconds()
+            // created_at: timestamp::now_seconds()
         };
 
         // Store pool
@@ -1259,6 +1260,12 @@ fun add_single_token(
         (estimated_out, estimated_fees, 0)
     }
 
+
+    #[view]
+    fun read_user_tokens(account: address): UserTokens acquires UserTokens {
+        *borrow_global<UserTokens>(account)  
+    }
+
     // Test functions
     // #[test_only]
     // public fun initialize_for_test(creator: &signer) {
@@ -1266,12 +1273,37 @@ fun add_single_token(
     // }
 
     #[test(account=@ashu_address)]
-    public fun test_factory_initialization(account: signer) acquires Factory, LiquidatorPosition ,UserTokens {
+    public fun test_functions(account: signer) acquires Factory, LiquidatorPosition ,UserTokens, Pool {
         initialize_factory(&account);
+        print(&string::utf8(b"Factory initialized"));
+        print(&string::utf8(b"------------------------------------------------------------"));
+
         add_user_tokens(&account, @0x29baedefbb43a971ab331393334a439ed6ab3be4be26c2f266cf8acb442e1792, @0xae9b08390ebb0e816396aeeb04f50339155f5db319eb44b6531312b252933d60,@0x69091fbab5f7d635ee7ac5098cf0c1efbe31d68fec0f2cd565e8d168daf52832, 10000000000000000000, 12000000000000000000, 10000000000000000000);
+        print(&string::utf8(b"Mock User tokens added"));
+        print(&string::utf8(b"------------------------------------------------------------"));
+
+        let user_tokens = read_user_tokens(signer::address_of(&account));
+        print(&string::utf8(b"User account"));
+        print(&user_tokens);
         create_pool(&account, @0x29baedefbb43a971ab331393334a439ed6ab3be4be26c2f266cf8acb442e1792, @0xae9b08390ebb0e816396aeeb04f50339155f5db319eb44b6531312b252933d60, 1000000000000000000, 1200000000000000000, 25, 25);
-       
+        print(&string::utf8(b"------------------------------------------------------------"));
+        let user_tokens2 = read_user_tokens(signer::address_of(&account));
+        print(&string::utf8(b"User account"));
+        print(&user_tokens2);
+        add_liquidity(&account, @0x29baedefbb43a971ab331393334a439ed6ab3be4be26c2f266cf8acb442e1792, @0xae9b08390ebb0e816396aeeb04f50339155f5db319eb44b6531312b252933d60, 25, 100000000000000000, 120000000000000000, 8388608);
+        print(&string::utf8(b"------------------------------------------------------------"));
+        let user_tokens3 = read_user_tokens(signer::address_of(&account));
+        print(&string::utf8(b"User account"));
+        print(&user_tokens3);
+        swap(&account, @0x29baedefbb43a971ab331393334a439ed6ab3be4be26c2f266cf8acb442e1792, @0xae9b08390ebb0e816396aeeb04f50339155f5db319eb44b6531312b252933d60, 25, 10000000000000000, (9975000000 as u64), true);
+        print(&string::utf8(b"------------------------------------------------------------"));
+        let user_tokens4 = read_user_tokens(signer::address_of(&account));
+        print(&string::utf8(b"User account"));
+        print(&user_tokens4);
+        print(&string::utf8(b"------------------------------------------------------------"));
+
     }
+    
 }
 }
 
