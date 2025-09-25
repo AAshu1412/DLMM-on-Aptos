@@ -28,7 +28,7 @@ This section details the primary user-facing functions of the protocol.
 This is an **admin-only** function that must be called once to set up the protocol.
 
 ```rust
-public entry fun initialize_factory(admin: &signer)
+public entry fun init_module(admin: &signer)
 ```
 **Purpose**: Creates the central **Factory** resource, which will be used to create and track all liquidity pools.
 
@@ -42,11 +42,10 @@ public entry fun initialize_factory(admin: &signer)
 2. Creates a new **Factory** struct.
 3. Stores the **Factory** as a resource under the admin's account.
 
-2. **Pool Management**
-**create_pool**
+### 2. **Pool Management**
+#### `create_pool`
 This function allows any user to create a new **liquidity pool** for a pair of tokens. This user becomes the first **liquidity provider**.
 
-Rust
 ```rust
 public entry fun create_pool(
     creator: &signer,
@@ -79,11 +78,10 @@ public entry fun create_pool(
 8. Deducts the initial token amounts from the creator's balance.
 9. Creates a **LiquidatorPosition** for the creator to track their share of the pool.
 
-3. **Liquidity Provision**
-**add_liquidity**
+### 3. **Liquidity Provision**
+#### `add_liquidity`
 Allows users to add liquidity to an existing pool at a specific price point.
 
-Rust
 ```rust
 public entry fun add_liquidity(
     liquidator: &signer,
@@ -112,10 +110,10 @@ public entry fun add_liquidity(
 4. If the **target_bin_id** does not exist, a new **Bin** is created at that price point.
 5. Updates the user's **LiquidatorPosition** to reflect their new, larger share.
 
-**remove_liquidity**
+### 4. **Remove Liquidity**
+#### `remove_liquidity`
 Allows a liquidity provider to withdraw a percentage of their assets from a specific bin they have funded.
 
-Rust
 ```rust
 public entry fun remove_liquidity(
     liquidator: &signer,
@@ -143,11 +141,10 @@ public entry fun remove_liquidity(
 5. Updates the user's **LiquidatorPosition** to reflect their smaller share.
 6. Transfers the withdrawn tokens back to the user's account.
 
-4. **Trading**
-**swap**
+### 5. **Trading**
+#### `swap`
 The core function for traders to exchange one token for another.
 
-Rust
 ```rust
 public entry fun swap(
     user: &signer,
@@ -179,14 +176,14 @@ public entry fun swap(
 7. The user's **token_in** is deducted, and the **token_out** is added to their balance.
 8. The **pool's** reserves are updated to reflect the trade.
 
-**Simplified Token Management**
+## **Simplified Token Management**
 This implementation utilizes a simplified, on-chain accounting system to manage user balances for the purpose of demonstrating the core DLMM logic.
 
 - **UserTokens Struct**: A resource stored under a user's account that holds balances for three different tokens.
 - **Helper Functions**: `add_user_tokens`, `deduct_single_token`, and `add_single_token` are used to initialize and modify these balances.
 - **Note**: This system operates independently of the standard Aptos token and coin standards. It is a mock framework designed to allow the DLMM functions to execute without requiring fully compliant on-chain tokens.
 
-**Getting Started**
+## **Getting Started**
 1. **Initialize the Protocol**: The admin must call `initialize_factory` once.
 2. **Provide Mock Tokens**: Users can call `add_user_tokens` to give themselves a starting balance for testing.
 3. **Create a Pool**: A user calls `create_pool` with two token addresses and initial amounts to start a new market.
